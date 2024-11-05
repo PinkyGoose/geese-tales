@@ -33,7 +33,6 @@ impl<S: States> Plugin for MyUiPlugin<S> {
             )
                 .run_if(in_state(self.state.clone())),
         )
-            // .insert_resource(WinitSettings::desktop_app())
             .add_systems(Startup, setup_ui_camera)
 
         ;
@@ -82,7 +81,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: Color::rgb(0., 0., 0.).into(),
+            background_color: Color::srgb(0., 0., 0.).into(),
             ..default()
         })
         .with_children(|parent| {
@@ -97,7 +96,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                         width: Val::Percent(30.0),
                         ..default()
                     },
-                    background_color: Color::rgb(0.2, 0.2, 0.2).into(),
+                    background_color: Color::srgb(0.2, 0.2, 0.2).into(),
                     ..default()
                 })
                 .with_children(|parent| {
@@ -110,7 +109,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                             align_items: AlignItems::Center,         // Центрирует по вертикали
                             ..default()
                         },
-                        background_color: Color::rgb(0.3, 0.3, 0.7).into(),
+                        background_color: Color::srgb(0.3, 0.3, 0.7).into(),
 
                         ..default()
                     }, ButtonType { button_type: WhatAButton::Play }
@@ -136,7 +135,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                             align_items: AlignItems::Center,         // Центрирует по вертикали
                             ..default()
                         },
-                        background_color: Color::rgb(0.3, 0.3, 0.7).into(),
+                        background_color: Color::srgb(0.3, 0.3, 0.7).into(),
                         ..default()
                     }, ButtonType { button_type: WhatAButton::LoadGame }))
                         .with_children(|parent| {
@@ -159,7 +158,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                             align_items: AlignItems::Center,         // Центрирует по вертикали
                             ..default()
                         },
-                        background_color: Color::rgb(0.3, 0.3, 0.7).into(),
+                        background_color: Color::srgb(0.3, 0.3, 0.7).into(),
                         ..default()
                     }, ButtonType { button_type: WhatAButton::Settings }))
                         .with_children(|parent| {
@@ -183,7 +182,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                             align_items: AlignItems::Center,         // Центрирует по вертикали
                             ..default()
                         },
-                        background_color: Color::rgb(0.3, 0.3, 0.7).into(),
+                        background_color: Color::srgb(0.3, 0.3, 0.7).into(),
                         ..default()
                     }, ButtonType { button_type: WhatAButton::Exit }))
                         .with_children(|parent| {
@@ -221,7 +220,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                             align_items: AlignItems::Center,         // Центрирует по вертикали
                             ..default()
                         },
-                        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+                        background_color: Color::srgb(0.1, 0.1, 0.1).into(),
                         ..default()
                     }, ButtonType { button_type: WhatAButton::Github }))
                         .with_children(|parent| {
@@ -232,7 +231,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                                     ..default()
                                 },
                                 image: UiImage::new(asset_server.load("icons/github.png")),
-                                background_color: Color::rgb(0., 0., 0.).into(),
+                                background_color: Color::srgb(0., 0., 0.).into(),
                                 ..default()
                             });
                         });
@@ -285,7 +284,6 @@ pub fn toggle_pause_game(
         }
     }
 }
-
 // Система для обработки взаимодействий с кнопкой
 fn button_system(
     mut interaction_query: Query<(&Interaction, &mut BackgroundColor, &ButtonType),(Changed<Interaction>, With<Button>)>,
@@ -302,16 +300,16 @@ fn button_system(
                     WhatAButton::LoadGame => {println!("LoadGame button clicked!");}
                 }
                 // Обработка события нажатия
-                *color = BackgroundColor(Color::rgb(0.7, 0.7, 0.9));
+                *color = BackgroundColor(Color::srgb(0.7, 0.7, 0.9));
 
             }
             Interaction::Hovered => {
                 // Обработка наведения курсора на кнопку
-                *color = BackgroundColor(Color::rgb(0.5, 0.5, 0.9));
+                *color = BackgroundColor(Color::srgb(0.5, 0.5, 0.9));
             }
             Interaction::None => {
                 // Возвращаем цвет к исходному, когда взаимодействие прекращается
-                *color = BackgroundColor(Color::rgb(0.3, 0.3, 0.7));
+                *color = BackgroundColor(Color::srgb(0.3, 0.3, 0.7));
             }
         }
     }
