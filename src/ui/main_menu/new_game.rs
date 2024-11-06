@@ -70,44 +70,23 @@ pub fn setup_new_game_ui(
                     ..default()
                 })
                 .with_children(|parent| {
-                    // Поле для ввода имени игрока
-                    parent
-                        .spawn(NodeBundle {
-                            style: Style {
-                                margin: UiRect::bottom(Val::Px(10.0)),
-                                ..default()
-                            },
-                            ..default()
-                        })
-                        .with_children(|parent| {
+
                             spawn_text_input(
                                 parent,
                                 &asset_server,
-                                "temp",
+                                "player temp",
                                 "Player Name:",
                                 Some(ent),
-                            )
-                        });
+                            );
+                                spawn_text_input(
+                                    parent,
+                                    &asset_server,
+                                    "seed temp",
+                                    "World Seed:",
+                                    None,
+                                );
 
-                    parent
-                        .spawn(NodeBundle {
-                            style: Style {
-                                margin: UiRect::bottom(Val::Px(10.0)),
-                                ..default()
-                            },
-                            ..default()
-                        })
-                        .with_children(|parent| {
-                            spawn_text_input(
-                                parent,
-                                &asset_server,
-                                "seed temp",
-                                "World Seed:",
-                                None,
-                            )
-                        });
 
-                    // Radiobuttons для выбора сложности
                     parent
                         .spawn(NodeBundle {
                             style: Style {
@@ -200,43 +179,45 @@ fn spawn_text_input(
     field_name: &str,
     add_to_res: Option<ResMut<ActiveInputField>>,
 ) {
-    {
-        parent.spawn((
-            TextBundle::from_section(
+    parent
+        .spawn(NodeBundle {
+            style: Style {
+                margin: UiRect::bottom(Val::Px(10.0)),
+                ..default()
+            },
+            ..default()
+        })
+        .with_children(|parent| {
+            parent.spawn((TextBundle::from_section(
                 field_name,
                 TextStyle {
                     font: asset_server.load("fonts/PIxelpointRegular.ttf"),
                     font_size: 20.0,
                     color: Color::WHITE,
                 },
-            ),
-            // TextInput {
-            //     content: String::new(),
-            //     active: true,
-            // },
-            // ClickableArea,
-        ));
-        let id = parent
-            .spawn((
-                TextBundle::from_section(
-                    placeholder, // Здесь будет отображаться имя игрока
-                    TextStyle {
-                        font: asset_server.load("fonts/PIxelpointRegular.ttf"),
-                        font_size: 20.0,
-                        color: Color::srgb(0.2, 0.6, 0.8),
+            ),));
+            let id = parent
+                .spawn((
+                    TextBundle::from_section(
+                        placeholder, // Здесь будет отображаться имя игрока
+                        TextStyle {
+                            font: asset_server.load("fonts/PIxelpointRegular.ttf"),
+                            font_size: 20.0,
+                            color: Color::srgb(0.2, 0.6, 0.8),
+                        },
+                    ),
+                    TextInput {
+                        content: placeholder.parse().unwrap(),
+                        active: false,
                     },
-                ),
-                TextInput {
-                    content: String::new(),
-                    active: false,
-                },
-                ClickableArea,
-            ))
-            .id();
-        if let Some(mut res) = add_to_res {
-            res.current = Some(id);
-        }
-    }
+                    ClickableArea,
+                ))
+                .id();
+            if let Some(mut res) = add_to_res {
+                res.current = Some(id);
+            }
+        });
+
 }
 pub fn keyboard_input_new_game(
     mut active_input: ResMut<ActiveInputField>,
