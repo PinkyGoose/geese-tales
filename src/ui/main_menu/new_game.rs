@@ -1,17 +1,11 @@
-use crate::states::MainMenuState;
-use crate::ui::main_menu::main_screen::setup_main_screen;
-use crate::ui::main_menu::{button_system, despawn_ui};
-use crate::ui::setup_ui_camera;
-use bevy::app::{App, Plugin, Startup, Update};
+use bevy::app::{App, Plugin, Update};
 use bevy::asset::AssetServer;
 use bevy::color::Color;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::input::ButtonState;
-use bevy::log::info;
 use bevy::prelude::{
     default, in_state, AlignItems, BuildChildren, ButtonBundle, Commands, Component, Entity,
-    EventReader, FlexDirection, IntoSystemConfigs, JustifyContent, KeyCode, NodeBundle, OnEnter,
-    OnExit, Query, Res, ResMut, Resource, States, Style, TextBundle, TextStyle, UiRect, Val,
+    EventReader, FlexDirection, IntoSystemConfigs, JustifyContent, KeyCode, NodeBundle, OnEnter, Query, Res, ResMut, Resource, States, Style, TextBundle, TextStyle, UiRect, Val,
 };
 use bevy::text::Text;
 #[derive(Component)]

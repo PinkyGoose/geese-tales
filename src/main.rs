@@ -18,7 +18,7 @@ fn main() {
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
                 .set(LogPlugin {
-                    filter: format!("info,wgpu_core=warn,wgpu_hal=warn,naga=off"),
+                    filter: "info,wgpu_core=warn,wgpu_hal=warn,naga=off".to_string(),
                     level: bevy::log::Level::DEBUG,
                     ..default()
                 })
@@ -29,7 +29,7 @@ fn main() {
         })
         .insert_state(AppState::MainMenu);
 
-    app.add_systems(OnEnter(AppState::MainMenu), (activate_ui_camera));
+    app.add_systems(OnEnter(AppState::MainMenu), activate_ui_camera);
     app.add_systems(
         OnExit(AppState::MainMenu),
         (deactivate_ui_camera, despawn_ui),

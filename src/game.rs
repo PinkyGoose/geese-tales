@@ -1,6 +1,5 @@
-use crate::states::{AppState, GameState, MainMenuState};
-use crate::ui::setup_ui_camera;
-use bevy::app::{App, Plugin, Startup, Update};
+use crate::states::AppState;
+use bevy::app::{App, Plugin, Update};
 use bevy::input::ButtonInput;
 use bevy::log::info;
 use bevy::prelude::{in_state, IntoSystemConfigs, KeyCode, NextState, Res, ResMut, State, States};

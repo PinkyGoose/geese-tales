@@ -1,25 +1,20 @@
 mod main_screen;
 pub mod new_game;
 mod settings;
-use crate::states::AppState;
 use crate::ui::main_menu::main_screen::{setup_main_screen, WhatAButton};
 use crate::ui::main_menu::new_game::NewGamePlugin;
 use crate::ui::setup_ui_camera;
 use crate::MainMenuState;
 use bevy::app::{App, Plugin, Startup, Update};
-use bevy::asset::AssetServer;
 use bevy::color::Color;
 use bevy::hierarchy::DespawnRecursiveExt;
 use bevy::prelude::IntoSystemConfigs;
 use bevy::prelude::OnExit;
 use bevy::prelude::{
-    default, in_state, AlignItems, BackgroundColor, BuildChildren, Button, ButtonBundle, Changed,
-    Commands, Component, Entity, FlexDirection, ImageBundle, Interaction, JustifyContent, Node,
-    NodeBundle, PositionType, Query, Res, States, Style, TextBundle, TextStyle, UiImage, Val, With,
+    in_state, BackgroundColor, Button, Changed,
+    Commands, Component, Entity, Interaction, Node, Query,  States, With,
 };
-use bevy::prelude::{AppExtStates, NextState, OnEnter, Reflect, ResMut, State};
-use new_game::keyboard_input_new_game;
-use new_game::setup_new_game_ui;
+use bevy::prelude::{AppExtStates, NextState, OnEnter, Reflect, ResMut};
 
 pub struct MyMainMenuPlugin<S: States> {
     pub state: S,
@@ -57,8 +52,6 @@ fn button_system(
         (&Interaction, &mut BackgroundColor, &ButtonType),
         (Changed<Interaction>, With<Button>),
     >,
-
-    state: Res<State<MainMenuState>>,
     mut next_state: ResMut<NextState<MainMenuState>>,
 ) {
     for (interaction, mut color, button_type) in &mut interaction_query {
