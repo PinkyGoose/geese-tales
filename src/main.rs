@@ -17,6 +17,11 @@ fn main() {
         .add_plugins(
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
+                .set(LogPlugin {
+                    filter: format!("info,wgpu_core=warn,wgpu_hal=warn,naga=off"),
+                    level: bevy::log::Level::DEBUG,
+                    ..default()
+                })
                 .disable::<LogPlugin>(),
         )
         .add_plugins(MyMainMenuPlugin {

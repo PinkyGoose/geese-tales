@@ -5,6 +5,7 @@ use crate::ui::setup_ui_camera;
 use bevy::app::{App, Plugin, Startup, Update};
 use bevy::asset::AssetServer;
 use bevy::color::Color;
+use bevy::input::ButtonState;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::log::info;
 use bevy::prelude::{
@@ -102,7 +103,7 @@ pub fn setup_new_game_ui(
                             let player_name_entity = parent
                                 .spawn((
                                     TextBundle::from_section(
-                                        "temp", // Здесь будет отображаться имя игрока
+                                        "temp1", // Здесь будет отображаться имя игрока
                                         TextStyle {
                                             font: asset_server.load("fonts/PIxelpointRegular.ttf"),
                                             font_size: 20.0,
@@ -140,7 +141,7 @@ pub fn setup_new_game_ui(
                             ));
                             parent.spawn((
                                 TextBundle::from_section(
-                                    "temp", // Здесь будет отображаться имя игрока
+                                    "temp2", // Здесь будет отображаться имя игрока
                                     TextStyle {
                                         font: asset_server.load("fonts/PIxelpointRegular.ttf"),
                                         font_size: 20.0,
@@ -243,44 +244,55 @@ pub fn keyboard_input_new_game(
     mut query: Query<(Entity, &mut Text, &mut TextInput)>,
     mut keyboard_input_events: EventReader<KeyboardInput>,
 ) {
-    info!("вошли в инпут");
+    // println!("вошли в инпут");
     if let Some(current_entity) = active_input.current {
-        info!("вроде есть current");
+        // println!("вроде есть current");
         // Обработка ввода символов для активного поля
+        // println!("всего есть в квери {}",query.iter().count());
+
         if let Ok((_, mut text, mut text_input)) = query.get_mut(current_entity) {
-            info!("вроде есть в квери");
+
             for event in keyboard_input_events.read() {
-                match event.key_code {
-                    KeyCode::Backspace => {
-                        // Удаляем последний символ
-                        text_input.content.pop();
-                    }
-                    KeyCode::Tab => {
-                        // Переключаем флаг активности для всех полей (реализовано ниже)
-                        active_input.current = None;
-                        break;
-                    }
-                    _ => {
-                        // Добавляем символ для Key::Character
-                        if let Key::Character(c) = &event.logical_key {
-                            text_input
-                                .content
-                                .push(c.to_string().chars().next().unwrap());
+                if event.state == ButtonState::Released {
+                    match event.key_code {
+                        KeyCode::Backspace => {
+                            // Удаляем последний символ
+                            text_input.content.pop();
+                        }
+                        KeyCode::Tab => {
+                            text_input.active = false;
+                            // Переключаем флаг активности для всех полей (реализовано ниже)
+                            active_input.current = None;
+                            break;
+                        }
+                        _ => {
+                            // Добавляем символ для Key::Character
+                            if let Key::Character(c) = &event.logical_key {
+                                text_input
+                                    .content
+                                    .push(c.to_string().chars().next().unwrap());
+                            }
                         }
                     }
+                    // Обновляем отображение текста
+                    text.sections[0].value = text_input.content.clone();
                 }
-                // Обновляем отображение текста
-                text.sections[0].value = text_input.content.clone();
             }
         }
-
+        // let mut k=0;
+        // println!("всего есть в квери {}",query.iter().count());
         // Переключение между полями после обработки ввода
         if active_input.current.is_none() {
+            // println!("вроде есть в квери {k}");
+            // k += 1;
             // Найти и переключить активное поле
             for (entity, _, mut other_text_input) in &mut query {
+
+                println!("{}, {}",entity == current_entity,!other_text_input.active);
                 if entity == current_entity {
                     other_text_input.active = false;
                 } else if !other_text_input.active {
+                    println!("установили");
                     other_text_input.active = true;
                     active_input.current = Some(entity);
                     break;
