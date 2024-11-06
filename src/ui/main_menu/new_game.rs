@@ -4,10 +4,12 @@ use bevy::color::Color;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::input::ButtonState;
 use bevy::prelude::{
-    default, in_state, AlignItems, BuildChildren, ButtonBundle, ChildBuilder, Commands, Component,
-    Entity, EventReader, FlexDirection, IntoSystemConfigs, JustifyContent, KeyCode, NodeBundle,
-    OnEnter, Query, Res, ResMut, Resource, States, Style, TextBundle, TextStyle, UiRect, Val,
+    default, in_state, AlignItems, BackgroundColor, BuildChildren, ButtonBundle, ChildBuilder,
+    Commands, Component, Entity, EventReader, FlexDirection, IntoSystemConfigs, JustifyContent,
+    KeyCode, NodeBundle, OnEnter, Query, Res, ResMut, Resource, States, Style, TextBundle,
+    TextStyle, UiRect, Val,
 };
+
 use bevy::text::Text;
 #[derive(Component)]
 struct ClickableArea;
@@ -70,22 +72,14 @@ pub fn setup_new_game_ui(
                     ..default()
                 })
                 .with_children(|parent| {
-
-                            spawn_text_input(
-                                parent,
-                                &asset_server,
-                                "player temp",
-                                "Player Name:",
-                                Some(ent),
-                            );
-                                spawn_text_input(
-                                    parent,
-                                    &asset_server,
-                                    "seed temp",
-                                    "World Seed:",
-                                    None,
-                                );
-
+                    spawn_text_input(
+                        parent,
+                        &asset_server,
+                        "player temp",
+                        "Player Name:",
+                        Some(&mut ent),
+                    );
+                    spawn_text_input(parent, &asset_server, "seed temp", "World Seed:", None);
 
                     parent
                         .spawn(NodeBundle {
@@ -177,55 +171,70 @@ fn spawn_text_input(
     asset_server: &Res<AssetServer>,
     placeholder: &str,
     field_name: &str,
-    add_to_res: Option<ResMut<ActiveInputField>>,
+    active_input: Option<&mut ResMut<ActiveInputField>>,
 ) {
-    parent
+    let node = parent
         .spawn(NodeBundle {
             style: Style {
                 margin: UiRect::bottom(Val::Px(10.0)),
+                padding: UiRect::all(Val::Px(5.0)),
+                border: UiRect::all(Val::Px(2.0)), // Рамка
                 ..default()
             },
             ..default()
         })
         .with_children(|parent| {
-            parent.spawn((TextBundle::from_section(
+            // Название текстового поля
+            parent.spawn(TextBundle::from_section(
                 field_name,
                 TextStyle {
                     font: asset_server.load("fonts/PIxelpointRegular.ttf"),
                     font_size: 20.0,
                     color: Color::WHITE,
                 },
-            ),));
+            ));
+
+            // Поле ввода текста
             let id = parent
                 .spawn((
-                    TextBundle::from_section(
-                        placeholder, // Здесь будет отображаться имя игрока
-                        TextStyle {
-                            font: asset_server.load("fonts/PIxelpointRegular.ttf"),
-                            font_size: 20.0,
-                            color: Color::srgb(0.2, 0.6, 0.8),
+                    TextBundle{
+                        text: Text::from_section(placeholder,
+                                                 TextStyle {
+                                                     font: asset_server.load("fonts/PIxelpointRegular.ttf"),
+                                                     font_size: 20.0,
+                                                     color: Color::srgb(0.2, 0.6, 0.8),
+                                                 }),
+                        background_color: if active_input.is_none() {
+                            Color::BLACK.into()
+                        } else {
+                            Color::srgb(1., 1., 0.).into()
                         },
-                    ),
+                        ..default()
+                    },
                     TextInput {
-                        content: placeholder.parse().unwrap(),
+
+                        content: placeholder.to_string(),
                         active: false,
                     },
+
                     ClickableArea,
                 ))
                 .id();
-            if let Some(mut res) = add_to_res {
-                res.current = Some(id);
-            }
-        });
 
+            // Устанавливаем активное поле
+            if let Some(active) = active_input {
+                active.current = Some(id);
+            }
+        })
+        .id();
 }
 pub fn keyboard_input_new_game(
     mut active_input: ResMut<ActiveInputField>,
-    mut query: Query<(Entity, &mut Text, &mut TextInput)>,
+    mut query: Query<(Entity, &mut Text,&mut BackgroundColor, &mut TextInput)>,
     mut keyboard_input_events: EventReader<KeyboardInput>,
 ) {
     if let Some(current_entity) = active_input.current {
-        if let Ok((_, mut text, mut text_input)) = query.get_mut(current_entity) {
+        if let Ok((_, mut text,mut color, mut text_input)) = query.get_mut(current_entity) {
             for event in keyboard_input_events.read() {
                 if event.state == ButtonState::Released {
                     match event.key_code {
@@ -234,6 +243,7 @@ pub fn keyboard_input_new_game(
                         }
                         KeyCode::Tab => {
                             text_input.active = false;
+                            color.0 = Color::BLACK.into();
                             active_input.current = None;
                             break;
                         }
@@ -250,10 +260,12 @@ pub fn keyboard_input_new_game(
             }
         }
         if active_input.current.is_none() {
-            for (entity, _, mut other_text_input) in &mut query {
+            for (entity, _,mut color, mut other_text_input) in &mut query {
                 if entity == current_entity {
+                    color.0 = Color::BLACK.into();
                     other_text_input.active = false;
                 } else if !other_text_input.active {
+                    color.0 = Color::srgb(1., 1., 0.).into();
                     other_text_input.active = true;
                     active_input.current = Some(entity);
                     break;
