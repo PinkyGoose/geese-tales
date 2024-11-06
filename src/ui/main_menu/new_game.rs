@@ -4,8 +4,9 @@ use bevy::color::Color;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::input::ButtonState;
 use bevy::prelude::{
-    default, in_state, AlignItems, BuildChildren, ButtonBundle, Commands, Component, Entity,
-    EventReader, FlexDirection, IntoSystemConfigs, JustifyContent, KeyCode, NodeBundle, OnEnter, Query, Res, ResMut, Resource, States, Style, TextBundle, TextStyle, UiRect, Val,
+    default, in_state, AlignItems, BuildChildren, ButtonBundle, ChildBuilder, Commands, Component,
+    Entity, EventReader, FlexDirection, IntoSystemConfigs, JustifyContent, KeyCode, NodeBundle,
+    OnEnter, Query, Res, ResMut, Resource, States, Style, TextBundle, TextStyle, UiRect, Val,
 };
 use bevy::text::Text;
 #[derive(Component)]
@@ -79,43 +80,15 @@ pub fn setup_new_game_ui(
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn((
-                                TextBundle::from_section(
-                                    "Player Name:",
-                                    TextStyle {
-                                        font: asset_server.load("fonts/PIxelpointRegular.ttf"),
-                                        font_size: 20.0,
-                                        color: Color::WHITE,
-                                    },
-                                ),
-                                // TextInput {
-                                //     content: String::new(),
-                                //     active: true,
-                                // },
-                                // ClickableArea,
-                            ));
-                            let player_name_entity = parent
-                                .spawn((
-                                    TextBundle::from_section(
-                                        "temp1", // Здесь будет отображаться имя игрока
-                                        TextStyle {
-                                            font: asset_server.load("fonts/PIxelpointRegular.ttf"),
-                                            font_size: 20.0,
-                                            color: Color::srgb(0.2, 0.6, 0.8),
-                                        },
-                                    ),
-                                    TextInput {
-                                        content: String::new(),
-                                        active: false,
-                                    },
-                                    ClickableArea,
-                                ))
-                                .id();
-
-                            ent.current = Some(player_name_entity);
+                            spawn_text_input(
+                                parent,
+                                &asset_server,
+                                "temp",
+                                "Player Name:",
+                                Some(ent),
+                            )
                         });
 
-                    // Поле для ввода сида мира
                     parent
                         .spawn(NodeBundle {
                             style: Style {
@@ -125,29 +98,13 @@ pub fn setup_new_game_ui(
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn(TextBundle::from_section(
+                            spawn_text_input(
+                                parent,
+                                &asset_server,
+                                "seed temp",
                                 "World Seed:",
-                                TextStyle {
-                                    font: asset_server.load("fonts/PIxelpointRegular.ttf"),
-                                    font_size: 20.0,
-                                    color: Color::WHITE,
-                                },
-                            ));
-                            parent.spawn((
-                                TextBundle::from_section(
-                                    "temp2", // Здесь будет отображаться имя игрока
-                                    TextStyle {
-                                        font: asset_server.load("fonts/PIxelpointRegular.ttf"),
-                                        font_size: 20.0,
-                                        color: Color::srgb(0.2, 0.6, 0.8),
-                                    },
-                                ),
-                                TextInput {
-                                    content: String::new(),
-                                    active: false,
-                                },
-                                ClickableArea,
-                            ));
+                                None,
+                            )
                         });
 
                     // Radiobuttons для выбора сложности
@@ -233,6 +190,54 @@ pub fn setup_new_game_ui(
         });
 }
 
+#[derive(Component)]
+struct InputFieldBorder; // Компонент для рамки вокруг текстового поля
+
+fn spawn_text_input(
+    parent: &mut ChildBuilder,
+    asset_server: &Res<AssetServer>,
+    placeholder: &str,
+    field_name: &str,
+    add_to_res: Option<ResMut<ActiveInputField>>,
+) {
+    {
+        parent.spawn((
+            TextBundle::from_section(
+                field_name,
+                TextStyle {
+                    font: asset_server.load("fonts/PIxelpointRegular.ttf"),
+                    font_size: 20.0,
+                    color: Color::WHITE,
+                },
+            ),
+            // TextInput {
+            //     content: String::new(),
+            //     active: true,
+            // },
+            // ClickableArea,
+        ));
+        let id = parent
+            .spawn((
+                TextBundle::from_section(
+                    placeholder, // Здесь будет отображаться имя игрока
+                    TextStyle {
+                        font: asset_server.load("fonts/PIxelpointRegular.ttf"),
+                        font_size: 20.0,
+                        color: Color::srgb(0.2, 0.6, 0.8),
+                    },
+                ),
+                TextInput {
+                    content: String::new(),
+                    active: false,
+                },
+                ClickableArea,
+            ))
+            .id();
+        if let Some(mut res) = add_to_res {
+            res.current = Some(id);
+        }
+    }
+}
 pub fn keyboard_input_new_game(
     mut active_input: ResMut<ActiveInputField>,
     mut query: Query<(Entity, &mut Text, &mut TextInput)>,

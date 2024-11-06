@@ -11,8 +11,8 @@ use bevy::hierarchy::DespawnRecursiveExt;
 use bevy::prelude::IntoSystemConfigs;
 use bevy::prelude::OnExit;
 use bevy::prelude::{
-    in_state, BackgroundColor, Button, Changed,
-    Commands, Component, Entity, Interaction, Node, Query,  States, With,
+    in_state, BackgroundColor, Button, Changed, Commands, Component, Entity, Interaction, Node,
+    Query, States, With,
 };
 use bevy::prelude::{AppExtStates, NextState, OnEnter, Reflect, ResMut};
 
