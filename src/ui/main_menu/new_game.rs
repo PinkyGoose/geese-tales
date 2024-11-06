@@ -30,13 +30,13 @@ impl<S: States> Plugin for NewGamePlugin<S> {
 }
 
 #[derive(Component)]
-struct TextInput {
+pub struct TextInput {
     content: String,
     active: bool, // Указывает, активно ли поле для ввода
 }
 
 #[derive(Resource, Default)]
-struct ActiveInputField {
+pub struct ActiveInputField {
     current: Option<Entity>,
 }
 //TODO добавить отдельное создание персонажа и мира
@@ -163,8 +163,6 @@ pub fn setup_new_game_ui(
         });
 }
 
-#[derive(Component)]
-struct InputFieldBorder; // Компонент для рамки вокруг текстового поля
 
 fn spawn_text_input(
     parent: &mut ChildBuilder,
@@ -173,7 +171,7 @@ fn spawn_text_input(
     field_name: &str,
     active_input: Option<&mut ResMut<ActiveInputField>>,
 ) {
-    let node = parent
+    parent
         .spawn(NodeBundle {
             style: Style {
                 margin: UiRect::bottom(Val::Px(10.0)),
@@ -225,8 +223,7 @@ fn spawn_text_input(
             if let Some(active) = active_input {
                 active.current = Some(id);
             }
-        })
-        .id();
+        });
 }
 pub fn keyboard_input_new_game(
     mut active_input: ResMut<ActiveInputField>,
