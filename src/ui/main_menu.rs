@@ -1,7 +1,7 @@
 mod main_screen;
 pub mod new_game;
 mod settings;
-use crate::ui::main_menu::main_screen::{setup_main_screen, WhatAButton};
+use crate::ui::main_menu::main_screen::{MainScreenButton, setup_main_screen};
 use crate::ui::main_menu::new_game::NewGamePlugin;
 use crate::ui::setup_ui_camera;
 use crate::MainMenuState;
@@ -33,12 +33,10 @@ impl<S: States> Plugin for MyMainMenuPlugin<S> {
     }
 }
 
-pub enum MenuButton {
-    MainScreenButton(WhatAButton),
-}
+
 #[derive(Component)]
-pub struct ButtonType {
-    button_type: MenuButton,
+pub struct MainScreenButtonType {
+    button_type: MainScreenButton,
 }
 pub fn despawn_ui(mut commands: Commands, query: Query<Entity, With<Node>>) {
     for i in query.iter() {
@@ -49,7 +47,7 @@ pub fn despawn_ui(mut commands: Commands, query: Query<Entity, With<Node>>) {
 // Система для обработки взаимодействий с кнопкой
 fn button_system(
     mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &ButtonType),
+        (&Interaction, &mut BackgroundColor, &MainScreenButtonType),
         (Changed<Interaction>, With<Button>),
     >,
     mut next_state: ResMut<NextState<MainMenuState>>,
@@ -58,28 +56,26 @@ fn button_system(
         match *interaction {
             Interaction::Pressed => {
                 match &button_type.button_type {
-                    MenuButton::MainScreenButton(but) => {
-                        match but {
-                            WhatAButton::Play => {
+                    MainScreenButton::Play => {
                                 // Переход к под-состоянию NewGame в MainMenuState
                                 next_state.set(MainMenuState::NewGame);
 
                                 println!("Play button clicked!");
                             }
-                            WhatAButton::Settings => {
+                    MainScreenButton::Settings => {
                                 println!("Settings button clicked!");
                             }
-                            WhatAButton::Github => {
+                    MainScreenButton::Github => {
                                 println!("Github button clicked!");
                             }
-                            WhatAButton::Exit => {
+                    MainScreenButton::Exit => {
                                 println!("Exit button clicked!");
                             }
-                            WhatAButton::LoadGame => {
+                    MainScreenButton::LoadGame => {
                                 println!("LoadGame button clicked!");
                             }
-                        }
-                    }
+
+
                 }
                 // Обработка события нажатия
                 *color = BackgroundColor(Color::srgb(0.7, 0.7, 0.9));

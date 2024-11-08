@@ -1,13 +1,13 @@
-use crate::ui::main_menu::ButtonType;
-use crate::ui::main_menu::MenuButton::MainScreenButton;
+
 use bevy::asset::AssetServer;
 use bevy::color::Color;
 use bevy::prelude::{
     default, AlignItems, BuildChildren, ButtonBundle, Commands, FlexDirection, ImageBundle,
     JustifyContent, NodeBundle, PositionType, Res, Style, TextBundle, TextStyle, UiImage, Val,
 };
+use crate::ui::main_menu::MainScreenButtonType;
 
-pub enum WhatAButton {
+pub enum MainScreenButton {
     Play,
     Settings,
     Github,
@@ -61,8 +61,8 @@ pub fn setup_main_screen(mut commands: Commands, asset_server: Res<AssetServer>)
 
                                 ..default()
                             },
-                            ButtonType {
-                                button_type: MainScreenButton(WhatAButton::Play),
+                            MainScreenButtonType {
+                                button_type: MainScreenButton::Play,
                             },
                         ))
                         .with_children(|parent| {
@@ -90,8 +90,8 @@ pub fn setup_main_screen(mut commands: Commands, asset_server: Res<AssetServer>)
                                 background_color: Color::srgb(0.3, 0.3, 0.7).into(),
                                 ..default()
                             },
-                            ButtonType {
-                                button_type: MainScreenButton(WhatAButton::LoadGame),
+                            MainScreenButtonType {
+                                button_type: MainScreenButton::LoadGame,
                             },
                         ))
                         .with_children(|parent| {
@@ -118,8 +118,8 @@ pub fn setup_main_screen(mut commands: Commands, asset_server: Res<AssetServer>)
                                 background_color: Color::srgb(0.3, 0.3, 0.7).into(),
                                 ..default()
                             },
-                            ButtonType {
-                                button_type: MainScreenButton(WhatAButton::Settings),
+                            MainScreenButtonType {
+                                button_type: MainScreenButton::Settings,
                             },
                         ))
                         .with_children(|parent| {
@@ -147,8 +147,8 @@ pub fn setup_main_screen(mut commands: Commands, asset_server: Res<AssetServer>)
                                 background_color: Color::srgb(0.3, 0.3, 0.7).into(),
                                 ..default()
                             },
-                            ButtonType {
-                                button_type: MainScreenButton(WhatAButton::Exit),
+                            MainScreenButtonType {
+                                button_type: MainScreenButton::Exit,
                             },
                         ))
                         .with_children(|parent| {
@@ -191,8 +191,8 @@ pub fn setup_main_screen(mut commands: Commands, asset_server: Res<AssetServer>)
                                 background_color: Color::srgb(0.1, 0.1, 0.1).into(),
                                 ..default()
                             },
-                            ButtonType {
-                                button_type: MainScreenButton(WhatAButton::Github),
+                            MainScreenButtonType {
+                                button_type: MainScreenButton::Github,
                             },
                         ))
                         .with_children(|parent| {
